@@ -17,10 +17,8 @@ import numpy as np
 #create_array()
 
 # %%
-import numpy as np
-def create_array(size = (2,2)):
-    result = np.zeros(size)
-    return result
+def create_array(size = (2,2))->np.ndarray:
+    return np.zeros(size)
 
 # %%
 #Készíts egy függvényt ami a paraméterként kapott array-t főátlóját feltölti egyesekkel
@@ -29,9 +27,10 @@ def create_array(size = (2,2)):
 #set_one()
 
 # %%
-import numpy as np
-def set_one(input_array: np.array)->np.array:
-   return np.fill_diagonal(input_array, 1)
+def set_one(input_array: np.ndarray)->np.ndarray:
+   result = np.array(input_array)
+   np.fill_diagonal(result, 1)
+   return result
 
 # %%
 # Készíts egy függvényt ami transzponálja a paraméterül kapott mártix-ot:
@@ -40,9 +39,8 @@ def set_one(input_array: np.array)->np.array:
 # do_transpose()
 
 # %%
-import numpy as np
-def do_transpose(input_array: np.array)->np.array:
-   return input_array.transpose()
+def do_transpose(input_array: np.ndarray)->np.ndarray:
+   return np.array(input_array).transpose()
 
 # %%
 # Készíts egy olyan függvényt ami az array-ben lévő értékeket N tizenedjegyik kerekíti, ha nincs megadva ez a paraméter, akkor legyen az alapértelmezett a kettő 
@@ -51,8 +49,7 @@ def do_transpose(input_array: np.array)->np.array:
 # round_array()
 
 # %%
-import numpy as np
-def round_array(input_array: np.array, n: int = 2)->np.array:
+def round_array(input_array: np.ndarray, n: int = 2)->np.ndarray:
    return np.around(input_array, n)
 
 # %%
@@ -62,8 +59,7 @@ def round_array(input_array: np.array, n: int = 2)->np.array:
 # bool_array()
 
 # %%
-import numpy as np
-def round_array(input_array: np.array)->np.array:
+def bool_array(input_array)->np.ndarray:
    return np.array(input_array, dtype=bool)
 
 # %%
@@ -73,10 +69,8 @@ def round_array(input_array: np.array)->np.array:
 # invert_bool_array()
 
 # %%
-import numpy as np
-def round_array(input_array: np.array)->np.array:
-   result = np.array(input_array, dtype=bool)
-   return np.invert(result, dtype=bool)
+def invert_bool_array(input_array: np.ndarray)->np.ndarray:
+   return np.invert(np.array(input_array, dtype=bool))
 
 # %%
 # Készíts egy olyan függvényt ami a paraméterként kapott array-t kilapítja
@@ -86,6 +80,7 @@ def round_array(input_array: np.array)->np.array:
 
 
 # %%
-
+def flatten(input_array: np.ndarray)->np.ndarray:
+   return np.array(input_array).flatten()
 
 
