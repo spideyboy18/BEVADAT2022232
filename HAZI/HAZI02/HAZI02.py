@@ -16,9 +16,8 @@ import numpy as np
 # column_swap()
 
 # %%
-def column_swap(input_array: np.ndarray)->np.ndarray:
-    arr = np.array(input_array)
-    arr[:, [0, 1]] = arr[:, [1, 0]]
+def column_swap(arr: np.array) -> np.array:
+    arr[:, 0], arr[:, 1] = arr[:, 1], arr[:, 0].copy()
     return arr
 
 # %%
@@ -164,9 +163,8 @@ def list_days(start, end):
 # get_act_date()
 
 # %%
-def get_act_date()->np.datetime64:
-    today = np.datetime64('today')
-    return np.datetime_as_string(today, unit='D')
+def get_act_date() -> np.datetime64:
+    return np.datetime64('today')
 
 # %%
 # Írj egy olyan függvényt ami visszadja, hogy mennyi másodperc telt el 1970 január 01. 00:02:00 óta. Int-el térjen vissza
@@ -176,7 +174,6 @@ def get_act_date()->np.datetime64:
 
 # %%
 def sec_from_1970():
-    time_diff = np.datetime64('today') - np.datetime64('1970-01-01T00:02:00') 
-    return int(time_diff / np.timedelta64(1, 's'))
+    return (np.datetime64('now') - np.datetime64('1970-01-01 00:02:00')).astype(int)
 
 
