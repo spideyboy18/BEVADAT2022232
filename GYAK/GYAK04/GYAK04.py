@@ -62,7 +62,7 @@ függvény neve: get_top_two
 # %%
 def get_top_two(datas: pd.DataFrame)->pd.DataFrame:
     copy_datas = pd.DataFrame.copy(datas)
-    return copy_datas.sort_values(by=["population"], ascending=False).head(2)
+    return copy_datas.sort_values(by=["area"], ascending=False).head(2)
 df = dict_to_dataframe(stats)
 get_top_two(df)
 
@@ -102,15 +102,13 @@ függvény neve: plot_population
 
 # %%
 def plot_population(datas: pd.DataFrame)->plt.figure:
-    copy_datas = pd.DataFrame.copy(datas)
-    x = copy_datas["country"]
-    y = copy_datas["population"]
-    plt.xlabel("Country")
-    plt.xlabel("Population (millions)")
-    plt.title("Population of Countries")
-
-    plt.bar(x, y)
-    plt.show()
+    df = datas.copy()
+    fig, ax = plt.subplots()
+    ax.bar(df['country'], df['population'])
+    ax.set_title('Population of Countries')
+    ax.set_xlabel('Country')
+    ax.set_ylabel('Population (millions)')
+    return fig
 df = dict_to_dataframe(stats)
 plot_population(df)
 
@@ -129,10 +127,11 @@ függvény neve: plot_area
 
 # %%
 def plot_area(datas: pd.DataFrame)->plt.figure:
-    copy_datas = pd.DataFrame.copy(datas)
-    plt.title("Area of Countries")
-    plt.pie(copy_datas["area"],labels=copy_datas["country"])
-    plt.show()
+    df = datas.copy()
+    fig, ax = plt.subplots()
+    ax.pie(df['area'], labels=df['country'])
+    ax.set_title('Area of Countries')
+    return fig
 df = dict_to_dataframe(stats)
 plot_area(df)
 
