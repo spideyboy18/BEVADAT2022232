@@ -2,68 +2,64 @@ import pandas as pd
 from typing import Tuple
 from scipy.stats import mode
 from sklearn.metrics import confusion_matrix
-import random
-import math
-
 
 class KNNClassifier:
-    def __init__(self, k: int, test_split_ratio: float, random_seed: int):
+    def __init__(self, k:int, test_split_ratio:float) -> None:
         self.k = k
         self.test_split_ratio = test_split_ratio
-        self.random_seed = random_seed
 
-    def load_csv(self, csv_path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-        random.seed(self.random_seed)
-        df = pd.read_csv(csv_path, header=None)
-        df = df.sample(frac=1, random_state=self.random_seed).reset_index(drop=True)
-        x, y = df.iloc[:, :-1], df.iloc[:, -1]
-        x = x.fillna(3.5)
-        mask = (x <= 13.0) & (x >= 0.0)
-        mask = mask.all(axis=1)
-        x, y = x.loc[mask], y.loc[mask]
-        x_train, y_train, x_test, y_test = self.train_test_split(x, y)
-        return x_train, y_train, x_test, y_test
+    @staticmethod
+    def load_csv(csv_path:str) ->Tuple[pd.DataFrame, pd.DataFrame]:
+        dataset = pd.read_csv(csv_path, delimiter=',')
+        dataset = dataset.sample(frac=1, random_state=42).reset_index(drop=True)
+        x,y = pd.DataFrame(dataset.iloc[:,:8]), pd.DataFrame(dataset.iloc[:,-1])
+        return x, y
 
-    def train_test_split(self, features: pd.DataFrame, labels: pd.Series) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+    def train_test_split(self, features:pd.DataFrame, labels:pd.DataFrame) -> None:
         test_size = int(len(features) * self.test_split_ratio)
         train_size = len(features) - test_size
         assert len(features) == test_size + train_size, "Size mismatch!"
-        x_train, y_train = features.iloc[:train_size, :], labels.iloc[:train_size]
-        x_test, y_test = features.iloc[train_size:train_size + test_size, :], labels.iloc[train_size:train_size + test_size]
-        return x_train, y_train, x_test, y_test
+        self.x_train, self.y_train = features.iloc[:train_size,:],labels[:train_size]
+        self.x_test, self.y_test = features.iloc[train_size:train_size+test_size,:], labels[train_size:train_size + test_size]
 
-    def euclidean(self, element_of_x: pd.Series) -> pd.Series:
-        return ((self.x_train - element_of_x) ** 2).sum(axis=1).apply(lambda x: math.sqrt(x))
-
-    def predict(self, x_test: pd.DataFrame) -> None:
-        labels_pred = []
-        for i in range(len(x_test)):
-            distances = self.euclidean(x_test.iloc[i])
-            distances = pd.concat([distances, self.y_train], axis=1)
-            distances = distances.sort_values(0)
-            label_pred = mode(distances.iloc[:self.k, 1], axis=0)[0][0]
-            labels_pred.append(label_pred)
-        self.y_preds = pd.Series(labels_pred)
-
-    def accuracy(self) -> float:
-        true_positive = (self.y_test == self.y_preds).sum()
-        return true_positive / len(self.y_test) * 100
-
-    def confusion_matrix(self) -> pd.DataFrame:
-        return pd.DataFrame(confusion_matrix(self.y_test, self.y_preds), columns=self.y_test.unique(), index=self.y_test.unique())
+    def euclidean(self, element_of_x:pd.DataFrame) -> pd.DataFrame:
+        points = self.x_train.reset_index(drop=True)
+        element_of_x = element_of_x.reindex(points.index).ffill()
+        distances = ((points - element_of_x) ** 2).sum(axis=1) ** 0.5
+        return pd.DataFrame(distances, columns=['distance'])
     
-    def best_k(self, x_test: pd.DataFrame, y_test: pd.DataFrame) -> Tuple[int, float]:
-        best_k_val = 0
-        best_accuracy = 0.0
-        for k in range(1, 21):
+    def predict(self, x_test:pd.DataFrame) -> None:
+        labels_pred = []
+        for x_test_element in x_test.itertuples(index=False):
+            row = pd.DataFrame(x_test_element).transpose()
+            row.columns = x_test_element._fields
+            distances = self.euclidean(row)
+            distances = pd.concat([distances, self.y_train], axis=1)
+            distances.sort_values(by='distance', axis=0, inplace=True)
+            label_pred = distances.iloc[:self.k, -1].mode()[0]
+            labels_pred.append(label_pred)
+        self.y_preds = pd.DataFrame(labels_pred, columns=['Outcome'])
+    
+    def accuracy(self) -> float:
+        y_test_local = self.y_test.copy()
+        y_test_local.reset_index(drop=True, inplace=True)
+        true_positive = int((y_test_local == self.y_preds).sum())
+        return true_positive / y_test_local.size * 100
+    
+    def best_k(self) -> float:
+        old_k = self.k
+        results = []
+        for k in range(1,21):
             self.k = k
-            self.predict(x_test)
-            accuracy = self.accuracy()
-            if accuracy > best_accuracy:
-                best_accuracy = accuracy
-                best_k_val = k
-        return (best_k_val, round(best_accuracy, 2))
+            self.predict(self.x_test)
+            res = round(self.accuracy(), 2)
+            results.append((k, res))
+        self.k = old_k
+        return max(results, key=lambda x:x[1])
 
+    def plot_confusion_matrix(self):
+        return confusion_matrix(self.y_test, self.y_preds)
+    
     @property
     def k_neighbors(self) -> int:
-        return self.k
+        return self.k   

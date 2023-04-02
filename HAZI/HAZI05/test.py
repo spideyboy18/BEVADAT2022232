@@ -1,18 +1,16 @@
 import pandas as pd
 from HAZI05 import KNNClassifier
+import os
 
-# Load data from a CSV file using Pandas
 
+kn = KNNClassifier(5, 0.1)
 
-# Create an instance of the KNNClassifier class
-knn = KNNClassifier(k=3, test_split_ratio=0.2, random_seed=42)
-knn.load_csv("data/iris.csv")
-# Split the data into training and testing sets
+x,y = kn.load_csv('diabetes.csv')
 
-# Train the classifier
+kn.train_test_split(x,y)
+kn.predict(kn.x_test)
 
-# Test the classifier
+kn.plot_confusion_matrix()
 
-# Print the accuracy and confusion matrix
-print("Accuracy:", knn.accuracy())
-print("Confusion matrix:\n", knn.confusion_matrix())
+print(kn.accuracy())
+print(kn.best_k())
