@@ -67,10 +67,13 @@ return type: (numpy.ndarray, numpy.ndarray)
 '''
 
 # %%
-def logistic_train_data(iris_df):
-    X = iris_df[['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']].values
-    y = iris_df[0, 1].values
-    return X, y
+def logistic_train_data(iris):
+    X = iris.data
+    y = iris.target
+    return X[y < 2], y[y < 2]
+
+data = load_iris_data()
+logistic_train_data(data)
 
 # %%
 '''
