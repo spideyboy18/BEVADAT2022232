@@ -118,7 +118,7 @@ return type: sklearn.linear_model._base.LogisticRegression
 import sklearn
 
 
-def get_trained_logistic_regression_model(X_train, y_train) -> sklearn.linear_model.LogisticRegression:
+def get_trained_logistic_regression_model(X_train, y_train):
     model = LogisticRegression().fit(X_train,y_train)
     return model
 
@@ -132,7 +132,7 @@ return type: numpy.ndarray
 '''
 
 # %%
-def predict(model, X_test) -> np.ndarray:
+def predict(model, X_test):
     y_pred = model.predict(X_test)
     return y_pred
 
