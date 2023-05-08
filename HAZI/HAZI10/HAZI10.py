@@ -13,15 +13,15 @@ függvény neve: mnist_digit_data
 '''
 
 # %%
-def mnist_digit_data():
-    
-    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
 
-    
+
+def mnist_digit_data():
+    (train_images, train_labels), (test_images,
+                                   test_labels) = tf.keras.datasets.mnist.load_data()
     train_images = train_images / 255.0
     test_images = test_images / 255.0
-
     return train_images, train_labels, test_images, test_labels
+
 
 # %%
 '''
@@ -36,16 +36,18 @@ függvény neve: mnist_model
 '''
 
 # %%
+
+
 def mnist_model():
-  
     model = tf.keras.Sequential([
-        layers.Flatten(input_shape=(28, 28)), 
-        layers.Dense(128, activation='relu'),  
-        layers.Dense(64, activation='relu'),   
-        layers.Dense(10, activation='softmax') 
+        layers.Flatten(input_shape=(28, 28)),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(10, activation='softmax')
     ])
 
     return model
+
 
 # %%
 '''
@@ -60,13 +62,14 @@ függvény neve: model_compile
 '''
 
 # %%
+
+
 def model_compile(model):
-    
     optimizer = tf.keras.optimizers.Adam()
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False)
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
-
     return model
+
 
 # %%
 '''
@@ -79,11 +82,12 @@ függvény neve: model_fit
 '''
 
 # %%
+
+
 def model_fit(model, epochs, train_images, train_labels):
-
     model.fit(train_images, train_labels, epochs=epochs, validation_split=0.2)
-
     return model
+
 
 # %%
 '''
@@ -96,15 +100,8 @@ függvény neve: model_evaluate
 '''
 
 # %%
+
+
 def model_evaluate(model, test_images, test_labels):
-   
     test_loss, test_acc = model.evaluate(test_images, test_labels)
-
     return test_loss, test_acc
-
-
-
-
-
-
-
